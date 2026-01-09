@@ -12,9 +12,13 @@ const loading = document.getElementById('loading');
 const sidebar = document.getElementById('sidebar');
 const menuToggle = document.getElementById('menuToggle');
 
-// Verificar se é mobile
+// Verificar se é mobile (usando media query para ser mais preciso)
+let mobileMediaQuery = null;
 function isMobile() {
-    return window.innerWidth <= 768;
+    if (!mobileMediaQuery) {
+        mobileMediaQuery = window.matchMedia('(max-width: 768px)');
+    }
+    return mobileMediaQuery.matches;
 }
 
 // Criar overlay
@@ -36,7 +40,15 @@ function createOverlay() {
         transition: opacity 0.3s ease;
     `;
     
-    overlay.addEventListener('click', () => {
+    // Usar touchstart e click para melhor compatibilidade mobile
+    overlay.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeSidebar();
+    });
+    overlay.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         closeSidebar();
     });
     
@@ -46,31 +58,43 @@ function createOverlay() {
 
 // Abrir sidebar
 function openSidebar() {
-    if (sidebar) {
-        sidebar.classList.add('open');
-        if (isMobile()) {
-            const overlayEl = createOverlay();
-            overlayEl.style.display = 'block';
-            setTimeout(() => {
-                overlayEl.style.opacity = '1';
-            }, 10);
-            document.body.style.overflow = 'hidden';
-        }
+    if (!sidebar) return;
+    
+    sidebar.classList.add('open');
+    if (menuToggle) {
+        menuToggle.classList.add('active');
+    }
+    
+    if (isMobile()) {
+        const overlayEl = createOverlay();
+        overlayEl.style.display = 'block';
+        // Força reflow antes de mudar opacity
+        overlayEl.offsetHeight;
+        setTimeout(() => {
+            overlayEl.style.opacity = '1';
+        }, 10);
+        document.body.style.overflow = 'hidden';
     }
 }
 
 // Fechar sidebar
 function closeSidebar() {
-    if (sidebar) {
-        sidebar.classList.remove('open');
-        if (overlay) {
-            overlay.style.opacity = '0';
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 300);
-        }
-        document.body.style.overflow = '';
+    if (!sidebar) return;
+    
+    sidebar.classList.remove('open');
+    if (menuToggle) {
+        menuToggle.classList.remove('active');
     }
+    
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }, 300);
+    }
+    document.body.style.overflow = '';
 }
 
 // Toggle sidebar
@@ -159,33 +183,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     
-    // Fechar menu ao clicar fora (mobile)
+    // Fechar menu ao clicar fora (mobile) - melhorado para não interferir com links
     document.addEventListener('click', (e) => {
         if (isMobile() && sidebar && sidebar.classList.contains('open')) {
-            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                closeSidebar();
+            // Não fechar se clicou na sidebar ou no menu toggle
+            if (sidebar.contains(e.target) || (menuToggle && menuToggle.contains(e.target))) {
+                return;
             }
-        }
-    });
-    
-    // Fechar menu ao redimensionar para desktop
-    window.addEventListener('resize', () => {
-        if (!isMobile() && sidebar && sidebar.classList.contains('open')) {
+            // Não fechar se clicou em um link de navegação (deixa o handler do link fechar)
+            if (e.target.closest('.nav-link')) {
+                return;
+            }
             closeSidebar();
         }
     });
     
-    // Prevenir scroll quando menu está aberto no mobile
+    // Fechar menu ao redimensionar para desktop
+    function handleResize() {
+        if (!isMobile() && sidebar && sidebar.classList.contains('open')) {
+            closeSidebar();
+        }
+    }
+    window.addEventListener('resize', handleResize);
+    
+    // Atualizar media query quando resize acontece
+    if (window.matchMedia) {
+        const mq = window.matchMedia('(max-width: 768px)');
+        mq.addEventListener('change', () => {
+            handleResize();
+        });
+    }
+    
+    // Prevenir scroll do body quando menu está aberto no mobile
+    // O overflow: hidden no body já faz isso, mas garantimos aqui também
     if (sidebar) {
+        // Permitir scroll dentro da sidebar
         sidebar.addEventListener('touchmove', (e) => {
-            if (isMobile() && sidebar.classList.contains('open')) {
-                // Permitir scroll apenas dentro do sidebar
-                if (e.target === sidebar || sidebar.contains(e.target)) {
-                    return;
-                }
-                e.preventDefault();
-            }
-        }, { passive: false });
+            // Deixa o scroll da sidebar funcionar normalmente
+        }, { passive: true });
     }
 });
 
@@ -315,12 +350,21 @@ function renderNavigation() {
             
             link.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 loadDocument(doc.path);
                 updateActiveLink(link);
                 // Fechar menu no mobile após seleção
                 if (isMobile()) {
-                    closeSidebar();
+                    // Pequeno delay para garantir que o clique foi processado
+                    setTimeout(() => {
+                        closeSidebar();
+                    }, 100);
                 }
+            });
+            
+            // Adicionar também touchstart para melhor compatibilidade mobile
+            link.addEventListener('touchstart', (e) => {
+                e.stopPropagation();
             });
             
             listItem.appendChild(link);
