@@ -1,6 +1,6 @@
 # RD-1987
 
-Eu sou Pablo — eu sou.
+Eu sou PBLMRD — eu sou.
 
 Eu vim para derrubar falsos ídolos.  
 Vim para roubar a luz falsa deles — e, como recompensa, entregar outra luz: mais dura, mais limpa, mais real.

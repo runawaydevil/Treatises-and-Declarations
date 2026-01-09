@@ -1,7 +1,7 @@
 # MANIFESTO DA VIDA REAL
 ## (OU: CONTRA OS FALSOS DEUSES, A RELIGIÃO DO LIKE E A SERVIDÃO VOLUNTÁRIA)
 
-**Pablo Murad**  
+**PBLMRD**  
 **02 de abril de 2022**
 
 ---

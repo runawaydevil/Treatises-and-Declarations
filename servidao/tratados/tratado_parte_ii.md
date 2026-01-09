@@ -1,6 +1,6 @@
 # PARTE II — SOBRE A IDOLATRIA, O RESSENTIMENTO E A PRISÃO DO OLHAR
 
-**Pablo Murad**  
+**PBLMRD**  
 **26 de outubro de 2023**
 
 > *Esta parte não reescreve o que veio antes; ela o aprofunda, mantendo o foco na idolatria e em seus motores ocultos.*

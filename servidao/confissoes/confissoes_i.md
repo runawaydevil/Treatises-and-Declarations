@@ -1,7 +1,7 @@
 # CONFISSÕES 01 — RUNAWAYDEVIL
 ## (ou: elogio do anonimato, fuga do inferno e a guerra contra o teatro do ego)
 
-**Pablo Murad**  
+**PBLMRD**  
 **Janeiro de 2026**
 
 ---

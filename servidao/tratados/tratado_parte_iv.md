@@ -1,7 +1,7 @@
 # TRATADO IV — SOBRE A CCRU E A ILUMINAÇÃO SOMBRIA
 ## (OU: COMO A TEORIA VIROU FEITIÇO, E O FEITIÇO VIROU POLÍTICA)
 
-**Pablo Murad**  
+**PBLMRD**  
 **02 de novembro de 2024**
 
 ---
