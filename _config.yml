@@ -1,0 +1,14 @@
+# Configuração do GitHub Pages
+title: Tratados e Declarações
+description: Site minimalista para renderização de documentos markdown
+theme: null
+plugins: []
+
+# Configurações básicas
+markdown: kramdown
+highlighter: rouge
+
+# Permite arquivos estáticos
+include:
+  - assets
+  - servidao

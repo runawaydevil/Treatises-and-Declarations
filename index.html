@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tratados e Declarações</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="nav-menu" id="navMenu">
+                <h2 class="nav-title">Documentos</h2>
+                <ul class="nav-list" id="navList">
+                    <!-- Será populado pelo JavaScript -->
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="content" id="content">
+            <div class="content-wrapper">
+                <div class="loading" id="loading">Carregando...</div>
+                <article class="markdown-content" id="markdownContent"></article>
+            </div>
+        </main>
+    </div>
+    
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
