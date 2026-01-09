@@ -16,4 +16,6 @@ Um demônio em fuga.
 
 ---
 
+<div style="text-align: center;">
 <img src="https://shot.1208.pro/uploads/SkDorTWiTvHHGgS2QTrzF9nxu62MQaXqMIYKAUEY.png" alt="Runaway Devil — illustration" width="360" />
+</div>

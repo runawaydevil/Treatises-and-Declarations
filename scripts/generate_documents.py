@@ -8,6 +8,19 @@ import json
 import re
 from pathlib import Path
 
+# Mapeamento de numerais romanos para números
+ROMAN_NUMERALS = {
+    'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5,
+    'vi': 6, 'vii': 7, 'viii': 8, 'ix': 9, 'x': 10,
+    'xi': 11, 'xii': 12, 'xiii': 13, 'xiv': 14, 'xv': 15,
+    'xvi': 16, 'xvii': 17, 'xviii': 18, 'xix': 19, 'xx': 20
+}
+
+def roman_to_int(roman_str):
+    """Converte numeral romano (string) para inteiro"""
+    roman_lower = roman_str.lower().strip()
+    return ROMAN_NUMERALS.get(roman_lower, 999)  # Retorna 999 se não encontrar (vai para o final)
+
 def extract_title_from_markdown(file_path):
     """Extrai o título do primeiro # do arquivo markdown"""
     try:
@@ -41,6 +54,41 @@ def get_section_name(file_path, servidao_path):
     # Capitaliza primeira letra de cada palavra
     return ' '.join(word.capitalize() for word in section.replace('_', ' ').replace('-', ' ').split())
 
+def get_sort_key(doc, file_path=None):
+    """Gera chave de ordenação que trata numerais romanos corretamente"""
+    section = doc['section']
+    title = doc['title']
+    path = doc.get('path', '')
+    
+    # Tenta extrair numeral romano do nome do arquivo primeiro
+    sort_num = 999  # Valor padrão alto para ir ao final
+    
+    if file_path:
+        filename = Path(file_path).stem.lower()
+        # Procura por padrões como "parte_i", "parte_ii", "parte_iii", etc.
+        match = re.search(r'parte[_\s]+([ivxlcdm]+)', filename)
+        if match:
+            sort_num = roman_to_int(match.group(1))
+        else:
+            # Tenta encontrar qualquer numeral romano no nome
+            match = re.search(r'[_\s]([ivxlcdm]+)[_\s]', filename)
+            if match:
+                sort_num = roman_to_int(match.group(1))
+    
+    # Se não encontrou no arquivo, tenta no título
+    if sort_num == 999:
+        # Procura por padrões como "PARTE I", "PARTE II", "IV", etc. no título
+        match = re.search(r'(?:PARTE|Parte|parte)[\s]+([IVXLCDM]+)', title)
+        if match:
+            sort_num = roman_to_int(match.group(1).lower())
+        else:
+            # Tenta encontrar numeral romano isolado no início ou meio do título
+            match = re.search(r'\b([IVXLCDM]+)\b', title)
+            if match:
+                sort_num = roman_to_int(match.group(1).lower())
+    
+    return (section, sort_num, title)
+
 def scan_markdown_files(servidao_path, base_path):
     """Escaneia recursivamente a pasta servidao/ e encontra todos os .md"""
     documents = []
@@ -67,14 +115,20 @@ def scan_markdown_files(servidao_path, base_path):
         title = extract_title_from_markdown(md_file)
         section = get_section_name(md_file, servidao_path)
         
-        documents.append({
+        doc = {
             'title': title,
             'path': relative_path.replace('\\', '/'),  # Normaliza para /
-            'section': section
-        })
+            'section': section,
+            '_file_path': str(md_file)  # Guarda caminho para ordenação
+        }
+        documents.append(doc)
     
-    # Ordena por seção e depois por título
-    documents.sort(key=lambda x: (x['section'], x['title']))
+    # Ordena por seção, depois por numeral romano (convertido), depois por título
+    documents.sort(key=lambda x: get_sort_key(x, x.get('_file_path')))
+    
+    # Remove o campo auxiliar antes de retornar
+    for doc in documents:
+        doc.pop('_file_path', None)
     
     return documents
 

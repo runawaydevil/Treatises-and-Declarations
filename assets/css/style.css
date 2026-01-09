@@ -287,6 +287,23 @@ body {
     text-decoration-thickness: 2px;
 }
 
+.markdown-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: var(--spacing-base) auto;
+}
+
+.markdown-content div[style*="text-align: center"] {
+    text-align: center;
+    margin: var(--spacing-base) 0;
+}
+
+.markdown-content div[style*="text-align: center"] img {
+    display: inline-block;
+    margin: 0 auto;
+}
+
 /* Responsive Design */
 
 /* Tablet e telas médias */
