@@ -2,7 +2,7 @@
 ## (OU: UMA CRÍTICA DA RAZÃO ESPETACULAR, DA VONTADE DE APROVAÇÃO E DO CULTO DOS FALSOS DEUSES)
 
 **Pablo Murad**  
-**08 de janeiro de 2026**
+**10 de março de 2023**
 
 ---
 

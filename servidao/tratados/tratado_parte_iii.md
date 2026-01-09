@@ -2,7 +2,7 @@
 ## (OU: O CIBERMOVIMENTO DA SOBERANIA DIGITAL CONTRA A INTERNET USADA COMO AÇOUGUE)
 
 **Pablo Murad**  
-**09 de janeiro de 2026**
+**16 de janeiro de 2024**
 
 ---
 

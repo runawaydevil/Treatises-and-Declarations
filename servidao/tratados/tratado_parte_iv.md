@@ -2,7 +2,7 @@
 ## (OU: COMO A TEORIA VIROU FEITIÇO, E O FEITIÇO VIROU POLÍTICA)
 
 **Pablo Murad**  
-**09 de janeiro de 2026**
+**02 de novembro de 2024**
 
 ---
 

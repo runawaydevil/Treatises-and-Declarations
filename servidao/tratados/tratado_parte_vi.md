@@ -2,7 +2,7 @@
 ## (OU: A APRECIAÇÃO DA LUZ ENCARNADA COMO ANTÍDOTO À RAZÃO ESPETACULAR, À VONTADE DE APROVAÇÃO E AO CULTO DOS FALSOS DEUSES)
 
 **Pablo Murad**  
-**Janeiro de 2026**
+**09 de janeiro de 2026**
 
 > *“Eu sou a luz do mundo.”* — João 8:12
 

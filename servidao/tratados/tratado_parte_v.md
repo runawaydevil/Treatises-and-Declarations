@@ -2,7 +2,7 @@
 ## (OU: POR QUE A DEPRESSÃO ONLINE É UM PROBLEMA DE EGO, STATUS E COMPARAÇÃO — NÃO UM TRIBUNAL MARXISTA)
 
 **Pablo Murad**  
-**09 de janeiro de 2026**
+**08 de julho de 2025**
 
 ---
 

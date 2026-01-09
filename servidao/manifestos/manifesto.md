@@ -2,7 +2,7 @@
 ## (OU: CONTRA OS FALSOS DEUSES, A RELIGIÃO DO LIKE E A SERVIDÃO VOLUNTÁRIA)
 
 **Pablo Murad**  
-**08 de janeiro de 2026**
+**02 de abril de 2022**
 
 ---
 
