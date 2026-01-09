@@ -265,6 +265,12 @@ E eu não vou fingir que isso é só teoria.
 
 ---
 
+## NOTA FINAL
+
+Não sou marxista, repúdio o comunismo/socialismo. Mas há ideias, que devo concordar. E é isso.
+
+---
+
 ## REFERÊNCIAS (LEITURAS, FONTES E PONTOS DE PARTIDA)
 
 1. CCRU — histórico e caracterização geral (Warwick, anos 90; theory-fiction): https://en.wikipedia.org/wiki/Cybernetic_Culture_Research_Unit
