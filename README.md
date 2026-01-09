@@ -1,5 +1,10 @@
 # Tratados e Declarações
 
+> **⚠️ Trabalho em andamento**  
+> Este repositório contém textos em constante desenvolvimento e atualização.
+
+---
+
 Textos filosóficos sobre a servidão voluntária às imagens, o culto aos falsos deuses digitais e a transformação da vida em espetáculo.
 
 **Pablo Murad** — Janeiro de 2026
