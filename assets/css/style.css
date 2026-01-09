@@ -90,14 +90,51 @@ body {
     font-weight: 700;
 }
 
-.nav-section {
+.nav-section-container {
     margin-top: var(--spacing-base);
+}
+
+.nav-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 0.5rem;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #666;
     font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+    padding: 0.25rem 0;
+}
+
+.nav-section:hover {
+    color: var(--color-black);
+}
+
+.section-toggle-icon {
+    display: inline-block;
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+    width: 1em;
+    text-align: center;
+}
+
+.nav-section.collapsed .section-toggle-icon {
+    transform: rotate(0deg);
+}
+
+.nav-section-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    transition: opacity 0.2s ease;
+}
+
+.nav-section-list[style*="display: none"] {
+    opacity: 0;
 }
 
 /* Menu Toggle (Mobile) */

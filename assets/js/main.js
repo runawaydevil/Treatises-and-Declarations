@@ -143,6 +143,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Renderizar navegação e carregar primeiro documento
     renderNavigation();
     if (documents.length > 0) {
+        // Expandir seção do primeiro documento
+        const firstDoc = documents[0];
+        if (collapsedSections.has(firstDoc.section)) {
+            toggleSection(firstDoc.section);
+        }
         loadDocument(documents[0].path);
     }
     
@@ -184,11 +189,77 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Estado das seções colapsadas
+const collapsedSections = new Set();
+
+// Carregar estado das seções do localStorage
+function loadSectionState() {
+    try {
+        const saved = localStorage.getItem('collapsedSections');
+        if (saved) {
+            const sections = JSON.parse(saved);
+            sections.forEach(section => collapsedSections.add(section));
+        }
+    } catch (e) {
+        console.error('Erro ao carregar estado das seções:', e);
+    }
+}
+
+// Salvar estado das seções no localStorage
+function saveSectionState() {
+    try {
+        localStorage.setItem('collapsedSections', JSON.stringify(Array.from(collapsedSections)));
+    } catch (e) {
+        console.error('Erro ao salvar estado das seções:', e);
+    }
+}
+
+// Toggle seção
+function toggleSection(sectionName) {
+    if (collapsedSections.has(sectionName)) {
+        collapsedSections.delete(sectionName);
+    } else {
+        collapsedSections.add(sectionName);
+    }
+    saveSectionState();
+    updateSectionUI(sectionName);
+}
+
+// Atualizar UI da seção
+function updateSectionUI(sectionName) {
+    const sectionElement = document.querySelector(`[data-section="${sectionName}"]`);
+    const sectionContent = document.querySelector(`[data-section-content="${sectionName}"]`);
+    const toggleIcon = sectionElement?.querySelector('.section-toggle-icon');
+    
+    if (!sectionElement || !sectionContent) return;
+    
+    const isCollapsed = collapsedSections.has(sectionName);
+    
+    if (isCollapsed) {
+        sectionContent.style.display = 'none';
+        if (toggleIcon) {
+            toggleIcon.textContent = '▶';
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+        sectionElement.classList.add('collapsed');
+    } else {
+        sectionContent.style.display = 'block';
+        if (toggleIcon) {
+            toggleIcon.textContent = '▼';
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+        sectionElement.classList.remove('collapsed');
+    }
+}
+
 // Renderizar navegação
 function renderNavigation() {
     if (!navList) return;
     
     navList.innerHTML = '';
+    
+    // Carregar estado salvo
+    loadSectionState();
     
     const sections = {};
     documents.forEach(doc => {
@@ -199,10 +270,38 @@ function renderNavigation() {
     });
     
     Object.keys(sections).forEach(sectionName => {
-        const sectionTitle = document.createElement('li');
+        // Container da seção
+        const sectionContainer = document.createElement('li');
+        sectionContainer.className = 'nav-section-container';
+        
+        // Título da seção (clicável)
+        const sectionTitle = document.createElement('div');
         sectionTitle.className = 'nav-section';
-        sectionTitle.textContent = sectionName;
-        navList.appendChild(sectionTitle);
+        sectionTitle.dataset.section = sectionName;
+        sectionTitle.style.cursor = 'pointer';
+        
+        // Ícone de toggle
+        const toggleIcon = document.createElement('span');
+        toggleIcon.className = 'section-toggle-icon';
+        toggleIcon.textContent = collapsedSections.has(sectionName) ? '▶' : '▼';
+        
+        // Texto da seção
+        const sectionText = document.createElement('span');
+        sectionText.textContent = sectionName;
+        
+        sectionTitle.appendChild(toggleIcon);
+        sectionTitle.appendChild(sectionText);
+        
+        // Event listener para toggle
+        sectionTitle.addEventListener('click', () => {
+            toggleSection(sectionName);
+        });
+        
+        // Lista de documentos da seção
+        const sectionList = document.createElement('ul');
+        sectionList.className = 'nav-section-list';
+        sectionList.dataset.sectionContent = sectionName;
+        sectionList.style.display = collapsedSections.has(sectionName) ? 'none' : 'block';
         
         sections[sectionName].forEach(doc => {
             const listItem = document.createElement('li');
@@ -225,8 +324,12 @@ function renderNavigation() {
             });
             
             listItem.appendChild(link);
-            navList.appendChild(listItem);
+            sectionList.appendChild(listItem);
         });
+        
+        sectionContainer.appendChild(sectionTitle);
+        sectionContainer.appendChild(sectionList);
+        navList.appendChild(sectionContainer);
     });
 }
 
@@ -260,6 +363,23 @@ async function loadDocument(path) {
         
         const markdown = await response.text();
         const html = marked.parse(markdown);
+        
+        // Extrair título do markdown
+        const titleMatch = markdown.match(/^#+\s*(.+)$/m);
+        const docTitle = titleMatch ? titleMatch[1].trim() : 'Tratados e Declarações';
+        
+        // Extrair descrição (primeiras linhas)
+        const lines = markdown.split('\n').filter(line => {
+            line = line.trim();
+            return line && !line.startsWith('#') && !line.startsWith('*') && !line.startsWith('---');
+        });
+        const description = lines.slice(0, 3).join(' ').substring(0, 200) || 'Documento filosófico sobre servidão voluntária e cultura digital.';
+        
+        // Atualizar JSON-LD dinâmico
+        updateStructuredData(docTitle, description, path);
+        
+        // Atualizar título da página
+        document.title = `${docTitle} | Tratados e Declarações`;
         
         if (markdownContent) {
             markdownContent.innerHTML = html;
@@ -299,6 +419,45 @@ async function loadDocument(path) {
             loading.style.display = 'none';
         }
     }
+}
+
+// Atualizar Structured Data (JSON-LD) dinamicamente
+function updateStructuredData(title, description, path) {
+    // Remove JSON-LD existente
+    const existingScript = document.querySelector('script[type="application/ld+json"]');
+    if (existingScript && existingScript.id === 'dynamic-structured-data') {
+        existingScript.remove();
+    }
+    
+    const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+    const fullUrl = `${baseUrl}/${path}`;
+    
+    const structuredData = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": title,
+        "description": description,
+        "url": fullUrl,
+        "author": {
+            "@type": "Person",
+            "name": "Pablo Murad"
+        },
+        "publisher": {
+            "@type": "Person",
+            "name": "Pablo Murad"
+        },
+        "inLanguage": "pt-BR",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": fullUrl
+        }
+    };
+    
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'dynamic-structured-data';
+    script.textContent = JSON.stringify(structuredData);
+    document.head.appendChild(script);
 }
 
 // Tratamento de erros globais
