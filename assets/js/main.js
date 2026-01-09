@@ -409,14 +409,18 @@ function renderNavigation() {
     const filteredDocuments = applyFilters(documents);
     
     const sections = {};
+    const sectionOrder = []; // Preserva a ordem das seções conforme aparecem no JSON
+    
     filteredDocuments.forEach(doc => {
         if (!sections[doc.section]) {
             sections[doc.section] = [];
+            sectionOrder.push(doc.section); // Guarda ordem da primeira aparição
         }
         sections[doc.section].push(doc);
     });
     
-    Object.keys(sections).forEach(sectionName => {
+    // Usa sectionOrder para manter Manifestos (e outras seções) na ordem correta
+    sectionOrder.forEach(sectionName => {
         // Container da seção
         const sectionContainer = document.createElement('li');
         sectionContainer.className = 'nav-section-container';
