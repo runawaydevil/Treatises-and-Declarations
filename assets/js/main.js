@@ -1,21 +1,5 @@
-// Configuração dos documentos
-const documents = [
-    {
-        title: 'Manifesto da Vida Real',
-        path: 'servidao/manifestos/manifesto.md',
-        section: 'Manifestos'
-    },
-    {
-        title: 'Tratado Parte I',
-        path: 'servidao/tratados/tratado_parte_i.md',
-        section: 'Tratados'
-    },
-    {
-        title: 'Tratado Parte II',
-        path: 'servidao/tratados/tratado_parte_ii.md',
-        section: 'Tratados'
-    }
-];
+// Configuração dos documentos (carregada dinamicamente)
+let documents = [];
 
 // Estado da aplicação
 let currentDocument = null;
@@ -106,10 +90,61 @@ marked.setOptions({
     mangle: false
 });
 
+// Carregar documentos do JSON
+async function loadDocuments() {
+    try {
+        const response = await fetch('documents.json');
+        
+        if (!response.ok) {
+            throw new Error(`Erro ao carregar documents.json: ${response.status} ${response.statusText}`);
+        }
+        
+        documents = await response.json();
+        
+        if (!Array.isArray(documents) || documents.length === 0) {
+            throw new Error('documents.json está vazio ou inválido');
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Erro ao carregar documentos:', error);
+        
+        // Mostrar erro na interface
+        if (markdownContent) {
+            markdownContent.innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <h2>Erro ao carregar documentos</h2>
+                    <p style="margin-top: 1rem; color: #666;">${error.message}</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: #999;">
+                        Execute o script generate_documents.py para gerar o arquivo documents.json
+                    </p>
+                </div>
+            `;
+            markdownContent.style.display = 'block';
+        }
+        
+        if (loading) {
+            loading.style.display = 'none';
+        }
+        
+        return false;
+    }
+}
+
 // Inicialização
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Carregar documentos primeiro
+    const loaded = await loadDocuments();
+    
+    if (!loaded) {
+        return; // Para aqui se não conseguiu carregar
+    }
+    
+    // Renderizar navegação e carregar primeiro documento
     renderNavigation();
-    loadDocument(documents[0].path);
+    if (documents.length > 0) {
+        loadDocument(documents[0].path);
+    }
     
     // Menu toggle para mobile
     if (menuToggle) {
