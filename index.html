@@ -75,31 +75,9 @@
             <nav class="nav-menu" id="navMenu">
                 <h2 class="nav-title">Documentos</h2>
                 
-                <!-- Filtros -->
-                <div class="filters-container" id="filtersContainer">
-                    <!-- Filtro por Status -->
-                    <div class="filter-group">
-                        <label class="filter-label">Status</label>
-                        <select id="statusFilter" class="filter-select">
-                            <option value="">Todos</option>
-                            <option value="seed">Seed</option>
-                            <option value="evergreen">Evergreen</option>
-                            <option value="canon">Canon</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Ordenação por Data -->
-                    <div class="filter-group">
-                        <label class="filter-label">Ordenar por Data</label>
-                        <select id="sortFilter" class="filter-select">
-                            <option value="">Padrão</option>
-                            <option value="date-asc">Mais Antigo</option>
-                            <option value="date-desc">Mais Recente</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Filtro por Tags (será populado dinamicamente) -->
-                    <div class="filter-group" id="tagsFilterGroup" style="display: none;">
+                <!-- Filtro por Tags (será populado dinamicamente apenas se houver tags) -->
+                <div class="filters-container" id="filtersContainer" style="display: none;">
+                    <div class="filter-group" id="tagsFilterGroup">
                         <label class="filter-label">Tags</label>
                         <div id="tagsFilter" class="tags-filter"></div>
                     </div>

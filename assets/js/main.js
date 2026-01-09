@@ -235,9 +235,7 @@ const collapsedSections = new Set();
 
 // Estado dos filtros
 let activeFilters = {
-    tags: [],
-    status: null,
-    sortBy: null // 'date-asc', 'date-desc', ou null
+    tags: []
 };
 
 // Carregar estado das seções do localStorage
@@ -312,26 +310,6 @@ function applyFilters(docs) {
         });
     }
     
-    // Filtro por status
-    if (activeFilters.status) {
-        filtered = filtered.filter(doc => doc.status === activeFilters.status);
-    }
-    
-    // Ordenação por data
-    if (activeFilters.sortBy === 'date-asc') {
-        filtered.sort((a, b) => {
-            const dateA = a.date || '';
-            const dateB = b.date || '';
-            return dateA.localeCompare(dateB);
-        });
-    } else if (activeFilters.sortBy === 'date-desc') {
-        filtered.sort((a, b) => {
-            const dateA = a.date || '';
-            const dateB = b.date || '';
-            return dateB.localeCompare(dateA);
-        });
-    }
-    
     return filtered;
 }
 
@@ -348,19 +326,19 @@ function getAllTags() {
 
 // Renderizar filtros de tags
 function renderTagFilters() {
-    const tagsFilterGroup = document.getElementById('tagsFilterGroup');
+    const filtersContainer = document.getElementById('filtersContainer');
     const tagsFilter = document.getElementById('tagsFilter');
     
-    if (!tagsFilterGroup || !tagsFilter) return;
+    if (!filtersContainer || !tagsFilter) return;
     
     const allTags = getAllTags();
     
     if (allTags.length === 0) {
-        tagsFilterGroup.style.display = 'none';
+        filtersContainer.style.display = 'none';
         return;
     }
     
-    tagsFilterGroup.style.display = 'block';
+    filtersContainer.style.display = 'block';
     tagsFilter.innerHTML = '';
     
     allTags.forEach(tag => {
@@ -415,27 +393,6 @@ function loadFilterState() {
 
 // Configurar event listeners dos filtros
 function setupFilters() {
-    const statusFilter = document.getElementById('statusFilter');
-    const sortFilter = document.getElementById('sortFilter');
-    
-    if (statusFilter) {
-        statusFilter.value = activeFilters.status || '';
-        statusFilter.addEventListener('change', (e) => {
-            activeFilters.status = e.target.value || null;
-            saveFilterState();
-            renderNavigation();
-        });
-    }
-    
-    if (sortFilter) {
-        sortFilter.value = activeFilters.sortBy || '';
-        sortFilter.addEventListener('change', (e) => {
-            activeFilters.sortBy = e.target.value || null;
-            saveFilterState();
-            renderNavigation();
-        });
-    }
-    
     renderTagFilters();
 }
 
