@@ -1,5 +1,21 @@
 [
   {
+    "title": "CONFISSÕES 01 — RUNAWAYDEVIL",
+    "path": "servidao/confissoes/confissoes_i.md",
+    "section": "Confissoes",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "ENSAIO I — A DESACELERAÇÃO DEMOGRÁFICA E O EVANGELHO DA VIDA PERFEITA",
+    "path": "servidao/ensaios/ensaio_i.md",
+    "section": "Ensaios",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
+  },
+  {
     "title": "MANIFESTO DA VIDA REAL",
     "path": "servidao/manifestos/manifesto.md",
     "section": "Manifestos",
@@ -11,6 +27,22 @@
     "title": "PARTE I — TRATADO MAIOR SOBRE A SERVIDÃO VOLUNTÁRIA ÀS IMAGENS",
     "path": "servidao/tratados/tratado_parte_i.md",
     "section": "Tratados",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "ZEIT — Biblioteca de Referências (Links)",
+    "path": "servidao/zeitgeist/Zeitbooks.md",
+    "section": "Zeitgeist",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "ENSAIO II — O EMBURRECIMENTO DO HUMANO",
+    "path": "servidao/ensaios/ensaio_ii.md",
+    "section": "Ensaios",
     "date": "2026-01-09",
     "status": null,
     "tags": []
@@ -48,33 +80,17 @@
     "tags": []
   },
   {
-    "title": "PARTE VI — CHRISTUS LUX",
-    "path": "servidao/tratados/tratado_parte_vi.md",
-    "section": "Tratados",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "CONFISSÕES 01 — RUNAWAYDEVIL",
-    "path": "servidao/confissoes/confissoes_i.md",
-    "section": "Confissoes",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "ZEIT — Biblioteca de Referências (Links)",
-    "path": "servidao/zeitgeist/Zeitbooks.md",
-    "section": "Zeitgeist",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
     "title": "Eu apoio a liberdade com consciência",
     "path": "servidao/zeitgeist/RD1.md",
     "section": "Zeitgeist",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "PARTE VI — CHRISTUS LUX",
+    "path": "servidao/tratados/tratado_parte_vi.md",
+    "section": "Tratados",
     "date": "2026-01-09",
     "status": null,
     "tags": []
