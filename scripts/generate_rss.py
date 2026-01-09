@@ -31,7 +31,7 @@ def extract_date_from_markdown(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-            # Procura por padrão de data: **Pablo Murad**\n**DD de mês de YYYY**
+            # Procura por padrão de data: **PM**\n**DD de mês de YYYY** (ou qualquer autor)
             date_match = re.search(r'\*\*.*?\*\*\s*\n\*\*(\d{1,2})\s+de\s+(\w+)\s+de\s+(\d{4})\*\*', content)
             if date_match:
                 day, month, year = date_match.groups()

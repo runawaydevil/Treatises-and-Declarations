@@ -8,7 +8,7 @@
     <title>Tratados e Declarações | Textos Filosóficos sobre Servidão Voluntária e Cultura Digital</title>
     <meta name="description" content="Textos filosóficos sobre a servidão voluntária às imagens, o culto aos falsos deuses digitais e a transformação da vida em espetáculo. Manifestos e tratados sobre a era contemporânea.">
     <meta name="keywords" content="filosofia, servidão voluntária, cultura digital, espetáculo, influencers, aprovação, autenticidade, crítica social, manifestos, tratados filosóficos">
-    <meta name="author" content="Pablo Murad">
+    <meta name="author" content="PM">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://runawaydevil.github.io/Treatises-and-Declarations/">
     
@@ -52,11 +52,11 @@
       "url": "https://runawaydevil.github.io/Treatises-and-Declarations/",
       "author": {
         "@type": "Person",
-        "name": "Pablo Murad"
+        "name": "PM"
       },
       "publisher": {
         "@type": "Person",
-        "name": "Pablo Murad"
+        "name": "PM"
       },
       "inLanguage": "pt-BR"
     }
@@ -74,6 +74,37 @@
         <aside class="sidebar" id="sidebar">
             <nav class="nav-menu" id="navMenu">
                 <h2 class="nav-title">Documentos</h2>
+                
+                <!-- Filtros -->
+                <div class="filters-container" id="filtersContainer">
+                    <!-- Filtro por Status -->
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="">Todos</option>
+                            <option value="seed">Seed</option>
+                            <option value="evergreen">Evergreen</option>
+                            <option value="canon">Canon</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Ordenação por Data -->
+                    <div class="filter-group">
+                        <label class="filter-label">Ordenar por Data</label>
+                        <select id="sortFilter" class="filter-select">
+                            <option value="">Padrão</option>
+                            <option value="date-asc">Mais Antigo</option>
+                            <option value="date-desc">Mais Recente</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Filtro por Tags (será populado dinamicamente) -->
+                    <div class="filter-group" id="tagsFilterGroup" style="display: none;">
+                        <label class="filter-label">Tags</label>
+                        <div id="tagsFilter" class="tags-filter"></div>
+                    </div>
+                </div>
+                
                 <ul class="nav-list" id="navList">
                     <!-- Será populado pelo JavaScript -->
                 </ul>

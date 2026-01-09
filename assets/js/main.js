@@ -164,6 +164,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         return; // Para aqui se não conseguiu carregar
     }
     
+    // Carregar estado dos filtros
+    loadFilterState();
+    
+    // Configurar filtros
+    setupFilters();
+    
     // Renderizar navegação e carregar primeiro documento
     renderNavigation();
     if (documents.length > 0) {
@@ -227,6 +233,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Estado das seções colapsadas
 const collapsedSections = new Set();
 
+// Estado dos filtros
+let activeFilters = {
+    tags: [],
+    status: null,
+    sortBy: null // 'date-asc', 'date-desc', ou null
+};
+
 // Carregar estado das seções do localStorage
 function loadSectionState() {
     try {
@@ -287,6 +300,145 @@ function updateSectionUI(sectionName) {
     }
 }
 
+// Aplicar filtros aos documentos
+function applyFilters(docs) {
+    let filtered = [...docs];
+    
+    // Filtro por tags
+    if (activeFilters.tags.length > 0) {
+        filtered = filtered.filter(doc => {
+            const docTags = doc.tags || [];
+            return activeFilters.tags.some(tag => docTags.includes(tag));
+        });
+    }
+    
+    // Filtro por status
+    if (activeFilters.status) {
+        filtered = filtered.filter(doc => doc.status === activeFilters.status);
+    }
+    
+    // Ordenação por data
+    if (activeFilters.sortBy === 'date-asc') {
+        filtered.sort((a, b) => {
+            const dateA = a.date || '';
+            const dateB = b.date || '';
+            return dateA.localeCompare(dateB);
+        });
+    } else if (activeFilters.sortBy === 'date-desc') {
+        filtered.sort((a, b) => {
+            const dateA = a.date || '';
+            const dateB = b.date || '';
+            return dateB.localeCompare(dateA);
+        });
+    }
+    
+    return filtered;
+}
+
+// Coletar todas as tags únicas
+function getAllTags() {
+    const tagsSet = new Set();
+    documents.forEach(doc => {
+        if (doc.tags && Array.isArray(doc.tags)) {
+            doc.tags.forEach(tag => tagsSet.add(tag));
+        }
+    });
+    return Array.from(tagsSet).sort();
+}
+
+// Renderizar filtros de tags
+function renderTagFilters() {
+    const tagsFilterGroup = document.getElementById('tagsFilterGroup');
+    const tagsFilter = document.getElementById('tagsFilter');
+    
+    if (!tagsFilterGroup || !tagsFilter) return;
+    
+    const allTags = getAllTags();
+    
+    if (allTags.length === 0) {
+        tagsFilterGroup.style.display = 'none';
+        return;
+    }
+    
+    tagsFilterGroup.style.display = 'block';
+    tagsFilter.innerHTML = '';
+    
+    allTags.forEach(tag => {
+        const label = document.createElement('label');
+        label.className = 'tag-checkbox';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = tag;
+        checkbox.checked = activeFilters.tags.includes(tag);
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                if (!activeFilters.tags.includes(tag)) {
+                    activeFilters.tags.push(tag);
+                }
+            } else {
+                activeFilters.tags = activeFilters.tags.filter(t => t !== tag);
+            }
+            saveFilterState();
+            renderNavigation();
+        });
+        
+        const span = document.createElement('span');
+        span.textContent = tag;
+        
+        label.appendChild(checkbox);
+        label.appendChild(span);
+        tagsFilter.appendChild(label);
+    });
+}
+
+// Salvar estado dos filtros
+function saveFilterState() {
+    try {
+        localStorage.setItem('activeFilters', JSON.stringify(activeFilters));
+    } catch (e) {
+        console.error('Erro ao salvar estado dos filtros:', e);
+    }
+}
+
+// Carregar estado dos filtros
+function loadFilterState() {
+    try {
+        const saved = localStorage.getItem('activeFilters');
+        if (saved) {
+            activeFilters = JSON.parse(saved);
+        }
+    } catch (e) {
+        console.error('Erro ao carregar estado dos filtros:', e);
+    }
+}
+
+// Configurar event listeners dos filtros
+function setupFilters() {
+    const statusFilter = document.getElementById('statusFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    
+    if (statusFilter) {
+        statusFilter.value = activeFilters.status || '';
+        statusFilter.addEventListener('change', (e) => {
+            activeFilters.status = e.target.value || null;
+            saveFilterState();
+            renderNavigation();
+        });
+    }
+    
+    if (sortFilter) {
+        sortFilter.value = activeFilters.sortBy || '';
+        sortFilter.addEventListener('change', (e) => {
+            activeFilters.sortBy = e.target.value || null;
+            saveFilterState();
+            renderNavigation();
+        });
+    }
+    
+    renderTagFilters();
+}
+
 // Renderizar navegação
 function renderNavigation() {
     if (!navList) return;
@@ -296,8 +448,11 @@ function renderNavigation() {
     // Carregar estado salvo
     loadSectionState();
     
+    // Aplicar filtros
+    const filteredDocuments = applyFilters(documents);
+    
     const sections = {};
-    documents.forEach(doc => {
+    filteredDocuments.forEach(doc => {
         if (!sections[doc.section]) {
             sections[doc.section] = [];
         }
@@ -384,6 +539,22 @@ function updateActiveLink(activeLink) {
     activeLink.classList.add('active');
 }
 
+// Remover front matter YAML do markdown
+function removeYamlFrontmatter(markdown) {
+    if (!markdown.startsWith('---')) {
+        return markdown;
+    }
+    
+    // Encontra o fim do front matter
+    const endIndex = markdown.indexOf('---', 3);
+    if (endIndex === -1) {
+        return markdown;
+    }
+    
+    // Remove o front matter e retorna o resto
+    return markdown.substring(endIndex + 3).trim();
+}
+
 // Carregar e renderizar documento
 async function loadDocument(path) {
     if (currentDocument === path) return;
@@ -405,10 +576,14 @@ async function loadDocument(path) {
             throw new Error(`Erro ao carregar: ${response.status} ${response.statusText}`);
         }
         
-        const markdown = await response.text();
+        let markdown = await response.text();
+        
+        // Remove front matter YAML antes de renderizar
+        markdown = removeYamlFrontmatter(markdown);
+        
         const html = marked.parse(markdown);
         
-        // Extrair título do markdown
+        // Extrair título do markdown (após remover front matter)
         const titleMatch = markdown.match(/^#+\s*(.+)$/m);
         const docTitle = titleMatch ? titleMatch[1].trim() : 'Tratados e Declarações';
         
@@ -484,11 +659,11 @@ function updateStructuredData(title, description, path) {
         "url": fullUrl,
         "author": {
             "@type": "Person",
-            "name": "Pablo Murad"
+            "name": "PM"
         },
         "publisher": {
             "@type": "Person",
-            "name": "Pablo Murad"
+            "name": "PM"
         },
         "inLanguage": "pt-BR",
         "mainEntityOfPage": {

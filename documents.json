@@ -2,46 +2,81 @@
   {
     "title": "MANIFESTO DA VIDA REAL",
     "path": "servidao/manifestos/manifesto.md",
-    "section": "Manifestos"
+    "section": "Manifestos",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
   },
   {
     "title": "PARTE I — TRATADO MAIOR SOBRE A SERVIDÃO VOLUNTÁRIA ÀS IMAGENS",
     "path": "servidao/tratados/tratado_parte_i.md",
-    "section": "Tratados"
+    "section": "Tratados",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
   },
   {
     "title": "PARTE II — SOBRE A IDOLATRIA, O RESSENTIMENTO E A PRISÃO DO OLHAR",
     "path": "servidao/tratados/tratado_parte_ii.md",
-    "section": "Tratados"
+    "section": "Tratados",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
   },
   {
     "title": "PARTE III — SOBRE A ECONOMIA DA EXTRAÇÃO",
     "path": "servidao/tratados/tratado_parte_iii.md",
-    "section": "Tratados"
+    "section": "Tratados",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
   },
   {
     "title": "TRATADO IV — SOBRE A CCRU E A ILUMINAÇÃO SOMBRIA",
     "path": "servidao/tratados/tratado_parte_iv.md",
-    "section": "Tratados"
+    "section": "Tratados",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
   },
   {
     "title": "PARTE V — CONTRA A HOAX DA PERFEIÇÃO",
     "path": "servidao/tratados/tratado_parte_v.md",
-    "section": "Tratados"
+    "section": "Tratados",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
   },
   {
     "title": "PARTE VI — CHRISTUS LUX",
     "path": "servidao/tratados/tratado_parte_vi.md",
-    "section": "Tratados"
+    "section": "Tratados",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "CONFISSÕES 01 — RUNAWAYDEVIL",
+    "path": "servidao/confissoes/confissoes_i.md",
+    "section": "Confissoes",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
   },
   {
     "title": "Eu apoio a liberdade com consciência",
     "path": "servidao/zeitgeist/RD1.md",
-    "section": "Zeitgeist"
+    "section": "Zeitgeist",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
   },
   {
     "title": "RD-1987",
     "path": "servidao/zeitgeist/RD.md",
-    "section": "Zeitgeist"
+    "section": "Zeitgeist",
+    "date": "2026-01-09",
+    "status": null,
+    "tags": []
   }
 ]
