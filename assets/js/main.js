@@ -267,17 +267,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Renderizar navegação
     renderNavigation();
     
-    // Carregar home.md automaticamente se existir, senão carrega o primeiro documento
-    const homeDoc = documents.find(doc => doc.path === 'home.md' || doc.section === 'Início');
-    if (homeDoc) {
-        loadDocument(homeDoc.path);
-    } else if (documents.length > 0) {
-        // Expandir seção do primeiro documento
-        const firstDoc = documents[0];
-        if (collapsedSections.has(firstDoc.section)) {
-            toggleSection(firstDoc.section);
+    // Verificar URL inicial (hash) ao carregar a página
+    const initialHash = window.location.hash;
+    if (initialHash && initialHash.startsWith('#/')) {
+        const initialPath = initialHash.substring(2);
+        // Verificar se o documento existe
+        const docExists = documents.find(doc => doc.path === initialPath);
+        if (docExists) {
+            loadDocument(initialPath);
+        } else {
+            // Se não existe, carregar home
+            const homeDoc = documents.find(doc => doc.path === 'home.md' || doc.section === 'Início');
+            if (homeDoc) {
+                loadDocument(homeDoc.path);
+            }
         }
-        loadDocument(documents[0].path);
+    } else {
+        // Carregar home.md automaticamente se existir, senão carrega o primeiro documento
+        const homeDoc = documents.find(doc => doc.path === 'home.md' || doc.section === 'Início');
+        if (homeDoc) {
+            loadDocument(homeDoc.path);
+        } else if (documents.length > 0) {
+            // Expandir seção do primeiro documento
+            const firstDoc = documents[0];
+            if (collapsedSections.has(firstDoc.section)) {
+                toggleSection(firstDoc.section);
+            }
+            loadDocument(documents[0].path);
+        }
     }
     
     // Menu toggle para mobile
@@ -327,6 +344,41 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Deixa o scroll da sidebar funcionar normalmente
         }, { passive: true });
     }
+    
+    // History API: Navegação com botões voltar/avançar
+    window.addEventListener('popstate', (e) => {
+        // Verificar se documents está carregado
+        if (!documents || !Array.isArray(documents) || documents.length === 0) {
+            return;
+        }
+        
+        if (e.state && e.state.path) {
+            // Carregar documento do estado
+            loadDocument(e.state.path);
+        } else {
+            // Se não há estado, verificar hash na URL
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#/')) {
+                const path = hash.substring(2); // Remove '#/'
+                const docExists = documents.find(doc => doc.path === path);
+                if (docExists) {
+                    loadDocument(path);
+                } else {
+                    // Se documento não existe, carregar home
+                    const homeDoc = documents.find(doc => doc.path === 'home.md' || doc.section === 'Início');
+                    if (homeDoc) {
+                        loadDocument(homeDoc.path);
+                    }
+                }
+            } else {
+                // Carregar home se não há hash
+                const homeDoc = documents.find(doc => doc.path === 'home.md' || doc.section === 'Início');
+                if (homeDoc) {
+                    loadDocument(homeDoc.path);
+                }
+            }
+        }
+    });
 });
 
 // Estado das seções colapsadas
@@ -509,8 +561,33 @@ function renderNavigation() {
     
     navList.innerHTML = '';
     
-    // Carregar estado salvo
-    loadSectionState();
+    // Verificar se há estado salvo válido ANTES de carregar
+    const savedStateRaw = localStorage.getItem('collapsedSections');
+    let hasSavedState = false;
+    
+    // Limpar estado atual
+    collapsedSections.clear();
+    
+    // Verifica se há estado salvo válido (não null, não vazio, não array vazio)
+    if (savedStateRaw && savedStateRaw.trim() !== '' && savedStateRaw !== '[]') {
+        try {
+            const sections = JSON.parse(savedStateRaw);
+            // Só considera estado válido se for um array com pelo menos um elemento
+            if (Array.isArray(sections) && sections.length > 0) {
+                hasSavedState = true;
+                sections.forEach(section => {
+                    if (section && typeof section === 'string') {
+                        collapsedSections.add(section);
+                    }
+                });
+            }
+        } catch (e) {
+            console.error('Erro ao carregar estado das seções:', e);
+            // Se houver erro, limpa o localStorage e inicia tudo colapsado
+            localStorage.removeItem('collapsedSections');
+            hasSavedState = false;
+        }
+    }
     
     // Aplicar filtros
     const filteredDocuments = applyFilters(documents);
@@ -573,28 +650,38 @@ function renderNavigation() {
         }
     });
     
-    // Verificar se há estado salvo
-    const hasSavedState = localStorage.getItem('collapsedSections') !== null;
+    // Se não há estado salvo, adiciona TODAS as seções como colapsadas ANTES de renderizar
+    if (!hasSavedState) {
+        // Itera sobre todas as pastas principais
+        Object.keys(foldersMap).forEach(folderName => {
+            const folderSections = foldersMap[folderName];
+            const mainMenuName = getMainMenuName(folderName);
+            
+            // Adiciona o menu principal como colapsado
+            collapsedSections.add(mainMenuName);
+            
+            // Adiciona todas as subseções como colapsadas
+            // Itera sobre todas as seções dentro da pasta
+            Object.keys(folderSections).forEach(sectionKey => {
+                const normalizedSection = sectionKey.toLowerCase();
+                const sectionDocs = folderSections[normalizedSection];
+                
+                // Verifica se há documentos na seção
+                if (sectionDocs && sectionDocs.length > 0) {
+                    const sectionDisplayName = getSectionDisplayName(folderName, normalizedSection);
+                    // Adiciona a subseção como colapsada
+                    collapsedSections.add(sectionDisplayName);
+                }
+            });
+        });
+        
+    }
     
     // Criar menu para cada pasta principal
     Object.keys(foldersMap).forEach(folderName => {
         const folderSections = foldersMap[folderName];
         const mainMenuName = getMainMenuName(folderName);
         const sectionOrder = getSectionOrder(folderName);
-        
-        // Se não há estado salvo, adiciona o menu principal e todas as subseções como colapsadas
-        if (!hasSavedState) {
-            collapsedSections.add(mainMenuName);
-            // Adiciona todas as subseções como colapsadas
-            Object.keys(folderSections).forEach(sectionKey => {
-                const normalizedSection = sectionKey.toLowerCase();
-                const sectionDocs = folderSections[normalizedSection];
-                if (sectionDocs && sectionDocs.length > 0) {
-                    const sectionDisplayName = getSectionDisplayName(folderName, normalizedSection);
-                    collapsedSections.add(sectionDisplayName);
-                }
-            });
-        }
         
         // Determina ordem das seções
         let orderedSections = [];
@@ -630,10 +717,13 @@ function renderNavigation() {
         mainMenuTitle.dataset.section = mainMenuName;
         mainMenuTitle.style.cursor = 'pointer';
         
+        // Verifica se o menu principal está colapsado
+        const isMainMenuCollapsed = collapsedSections.has(mainMenuName);
+        
         // Ícone de toggle
         const toggleIcon = document.createElement('span');
         toggleIcon.className = 'section-toggle-icon';
-        toggleIcon.textContent = collapsedSections.has(mainMenuName) ? '▶' : '▼';
+        toggleIcon.textContent = isMainMenuCollapsed ? '▶' : '▼';
         
         // Texto do menu principal
         const mainMenuText = document.createElement('span');
@@ -641,6 +731,11 @@ function renderNavigation() {
         
         mainMenuTitle.appendChild(toggleIcon);
         mainMenuTitle.appendChild(mainMenuText);
+        
+        // Aplicar classe collapsed se necessário
+        if (isMainMenuCollapsed) {
+            mainMenuTitle.classList.add('collapsed');
+        }
         
         // Event listener para toggle
         mainMenuTitle.addEventListener('click', () => {
@@ -651,7 +746,7 @@ function renderNavigation() {
         const mainMenuContent = document.createElement('ul');
         mainMenuContent.className = 'nav-section-list';
         mainMenuContent.dataset.sectionContent = mainMenuName;
-        mainMenuContent.style.display = collapsedSections.has(mainMenuName) ? 'none' : 'block';
+        mainMenuContent.style.display = isMainMenuCollapsed ? 'none' : 'block';
         
         // Criar subseções dentro do menu principal
         orderedSections.forEach(sectionKey => {
@@ -661,6 +756,9 @@ function renderNavigation() {
             if (!sectionDocs || sectionDocs.length === 0) return;
             
             const sectionDisplayName = getSectionDisplayName(folderName, normalizedSection);
+            
+            // Verifica se a subseção está colapsada
+            const isSubSectionCollapsed = collapsedSections.has(sectionDisplayName);
             
             const subSectionContainer = document.createElement('li');
             subSectionContainer.className = 'nav-subsection-container';
@@ -674,7 +772,7 @@ function renderNavigation() {
             // Ícone de toggle da subseção
             const subToggleIcon = document.createElement('span');
             subToggleIcon.className = 'section-toggle-icon';
-            subToggleIcon.textContent = collapsedSections.has(sectionDisplayName) ? '▶' : '▼';
+            subToggleIcon.textContent = isSubSectionCollapsed ? '▶' : '▼';
             
             // Texto da subseção
             const subSectionText = document.createElement('span');
@@ -682,6 +780,11 @@ function renderNavigation() {
             
             subSectionTitle.appendChild(subToggleIcon);
             subSectionTitle.appendChild(subSectionText);
+            
+            // Aplicar classe collapsed se necessário
+            if (isSubSectionCollapsed) {
+                subSectionTitle.classList.add('collapsed');
+            }
             
             // Event listener para toggle da subseção
             subSectionTitle.addEventListener('click', () => {
@@ -692,7 +795,7 @@ function renderNavigation() {
             const subSectionList = document.createElement('ul');
             subSectionList.className = 'nav-subsection-list';
             subSectionList.dataset.sectionContent = sectionDisplayName;
-            subSectionList.style.display = collapsedSections.has(sectionDisplayName) ? 'none' : 'block';
+            subSectionList.style.display = isSubSectionCollapsed ? 'none' : 'block';
             
             sectionDocs.forEach(doc => {
                 const listItem = document.createElement('li');
@@ -736,6 +839,7 @@ function renderNavigation() {
     
     // Se não havia estado salvo, salva o estado inicial (tudo colapsado)
     if (!hasSavedState) {
+        // Salva o estado inicial com todas as seções colapsadas
         saveSectionState();
     }
 }
@@ -767,7 +871,7 @@ function removeYamlFrontmatter(markdown) {
 async function loadDocument(path) {
     if (currentDocument === path) return;
     
-    currentDocument = path;
+    // Não atualizar currentDocument até confirmar que o documento foi carregado com sucesso
     
     // Mostrar loading
     if (loading) {
@@ -798,15 +902,24 @@ async function loadDocument(path) {
         // Extrair descrição (primeiras linhas)
         const lines = markdown.split('\n').filter(line => {
             line = line.trim();
-            return line && !line.startsWith('#') && !line.startsWith('*') && !line.startsWith('---');
+            return line && !line.startsWith('#') && !line.startsWith('*') && !line.startsWith('---') && !line.startsWith('>');
         });
         const description = lines.slice(0, 3).join(' ').substring(0, 200) || 'Documento filosófico sobre servidão voluntária e cultura digital.';
         
-        // Atualizar JSON-LD dinâmico
-        updateStructuredData(docTitle, description, path);
+        // Extrair data do documento (se disponível no documents.json)
+        let docDate = null;
+        if (documents && Array.isArray(documents)) {
+            const docInfo = documents.find(d => d.path === path);
+            if (docInfo && docInfo.date) {
+                docDate = docInfo.date;
+            }
+        }
         
-        // Atualizar título da página
-        document.title = `${docTitle} | Tratados e Declarações`;
+        // Atualizar meta tags dinamicamente
+        updateMetaTags(docTitle, description, path);
+        
+        // Atualizar JSON-LD dinâmico
+        updateStructuredData(docTitle, description, path, docDate);
         
         if (markdownContent) {
             markdownContent.innerHTML = html;
@@ -816,6 +929,16 @@ async function loadDocument(path) {
         if (loading) {
             loading.style.display = 'none';
         }
+        
+        // Atualizar currentDocument apenas após sucesso
+        currentDocument = path;
+        
+        // Atualizar URL usando History API
+        const hashPath = path === 'home.md' ? '' : `#/${path}`;
+        // Remove hash existente do pathname se houver
+        const cleanPathname = window.location.pathname.split('#')[0];
+        const newUrl = window.location.origin + cleanPathname + hashPath;
+        window.history.pushState({ path: path }, '', newUrl);
         
         // Scroll para o topo
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -828,6 +951,9 @@ async function loadDocument(path) {
         
     } catch (error) {
         console.error('Erro ao carregar documento:', error);
+        
+        // Resetar currentDocument em caso de erro
+        currentDocument = null;
         
         if (markdownContent) {
             markdownContent.innerHTML = `
@@ -848,20 +974,81 @@ async function loadDocument(path) {
     }
 }
 
-// Atualizar Structured Data (JSON-LD) dinamicamente
-function updateStructuredData(title, description, path) {
-    // Remove JSON-LD existente
-    const existingScript = document.querySelector('script[type="application/ld+json"]');
-    if (existingScript && existingScript.id === 'dynamic-structured-data') {
-        existingScript.remove();
+// Atualizar meta tags dinamicamente
+function updateMetaTags(title, description, path) {
+    const baseUrl = 'https://runawaydevil.github.io/Treatises-and-Declarations/';
+    const fullUrl = path === 'home.md' 
+        ? baseUrl 
+        : `${baseUrl}#/${path}`;
+    const imageUrl = `${baseUrl}public/fav.ico`;
+    
+    // Atualizar title
+    document.title = `${title} | Tratados e Declarações`;
+    
+    // Função auxiliar para atualizar ou criar meta tag
+    function updateOrCreateMeta(selector, attribute, attributeValue, content) {
+        let meta = document.querySelector(selector);
+        if (!meta) {
+            meta = document.createElement('meta');
+            meta.setAttribute(attribute, attributeValue);
+            document.head.appendChild(meta);
+        }
+        meta.setAttribute('content', content);
     }
     
-    const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
-    const fullUrl = `${baseUrl}/${path}`;
+    // Atualizar meta description
+    updateOrCreateMeta('meta[name="description"]', 'name', 'description', description);
+    
+    // Atualizar Open Graph tags
+    updateOrCreateMeta('meta[property="og:title"]', 'property', 'og:title', `${title} | Tratados e Declarações`);
+    updateOrCreateMeta('meta[property="og:description"]', 'property', 'og:description', description);
+    updateOrCreateMeta('meta[property="og:url"]', 'property', 'og:url', fullUrl);
+    updateOrCreateMeta('meta[property="og:image"]', 'property', 'og:image', imageUrl);
+    
+    // Atualizar Twitter tags
+    updateOrCreateMeta('meta[name="twitter:title"]', 'name', 'twitter:title', `${title} | Tratados e Declarações`);
+    updateOrCreateMeta('meta[name="twitter:description"]', 'name', 'twitter:description', description);
+    updateOrCreateMeta('meta[name="twitter:url"]', 'name', 'twitter:url', fullUrl);
+    updateOrCreateMeta('meta[name="twitter:image"]', 'name', 'twitter:image', imageUrl);
+    
+    // Atualizar canonical URL
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', fullUrl);
+}
+
+// Atualizar Structured Data (JSON-LD) dinamicamente
+function updateStructuredData(title, description, path, date = null) {
+    // Remove todos os scripts JSON-LD existentes (tanto o inicial quanto os dinâmicos)
+    const allScripts = document.querySelectorAll('script[type="application/ld+json"]');
+    allScripts.forEach(script => {
+        if (script.id === 'dynamic-structured-data' || !script.id) {
+            script.remove();
+        }
+    });
+    
+    const baseUrl = 'https://runawaydevil.github.io/Treatises-and-Declarations/';
+    const fullUrl = path === 'home.md' 
+        ? baseUrl 
+        : `${baseUrl}#/${path}`;
+    
+    // Determinar tipo de schema baseado no path
+    let schemaType = 'BlogPosting';
+    if (path === 'home.md') {
+        schemaType = 'WebSite';
+    } else if (path.includes('tratado')) {
+        schemaType = 'Article';
+    } else if (path.includes('manifesto')) {
+        schemaType = 'Article';
+    }
     
     const structuredData = {
         "@context": "https://schema.org",
-        "@type": "BlogPosting",
+        "@type": schemaType,
         "headline": title,
         "description": description,
         "url": fullUrl,
@@ -873,12 +1060,28 @@ function updateStructuredData(title, description, path) {
             "@type": "Person",
             "name": "PM"
         },
-        "inLanguage": "pt-BR",
-        "mainEntityOfPage": {
+        "inLanguage": "pt-BR"
+    };
+    
+    // Adicionar data de publicação se disponível
+    if (date) {
+        structuredData.datePublished = date;
+        structuredData.dateModified = date;
+    }
+    
+    // Adicionar mainEntityOfPage para artigos
+    if (schemaType !== 'WebSite') {
+        structuredData.mainEntityOfPage = {
             "@type": "WebPage",
             "@id": fullUrl
-        }
-    };
+        };
+    }
+    
+    // Para WebSite, adicionar estrutura diferente
+    if (schemaType === 'WebSite') {
+        structuredData.name = "Tratados e Declarações";
+        structuredData.description = "Textos filosóficos sobre a servidão voluntária às imagens, o culto aos falsos deuses digitais e a transformação da vida em espetáculo";
+    }
     
     const script = document.createElement('script');
     script.type = 'application/ld+json';

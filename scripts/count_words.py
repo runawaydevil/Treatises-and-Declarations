@@ -70,24 +70,27 @@ def count_words_in_file(file_path):
         print(f"Erro ao processar {file_path}: {e}")
         return 0
 
-def scan_documents(servidao_path):
-    """Escaneia todos os documentos em servidao/"""
+def scan_documents(base_path, folder_name):
+    """Escaneia todos os documentos em uma pasta"""
     documents = []
-    servidao_path = Path(servidao_path).resolve()
+    folder_path = Path(base_path) / folder_name
+    folder_path = folder_path.resolve()
     
-    if not servidao_path.exists():
-        print(f"Erro: Pasta {servidao_path} não encontrada!")
+    if not folder_path.exists():
+        print(f"Aviso: Pasta {folder_path} não encontrada!")
         return documents
     
-    for md_file in servidao_path.rglob('*.md'):
+    for md_file in folder_path.rglob('*.md'):
         if any(part.startswith('.') for part in md_file.parts):
             continue
         
-        relative_path = md_file.relative_to(servidao_path)
+        relative_path = md_file.relative_to(folder_path)
+        # Adiciona o nome da pasta ao caminho relativo
+        full_relative_path = f"{folder_name}/{relative_path}"
         word_count = count_words_in_file(md_file)
         
         documents.append({
-            'path': str(relative_path),
+            'path': str(full_relative_path),
             'words': word_count,
             'pages_pocket': round(word_count / WORDS_PER_PAGE_POCKET, 1),
             'pages_standard': round(word_count / WORDS_PER_PAGE_STANDARD, 1)
@@ -98,17 +101,23 @@ def scan_documents(servidao_path):
 def main():
     """Função principal"""
     script_dir = Path(__file__).parent.parent.resolve()
-    servidao_path = script_dir / 'servidao'
     
     print("=" * 70)
     print("CONTAGEM DE PALAVRAS - OBRA VIVA")
     print("=" * 70)
     print()
     
-    documents = scan_documents(servidao_path)
+    # Escaneia servidao/
+    servidao_docs = scan_documents(script_dir, 'servidao')
+    
+    # Escaneia cartas/
+    cartas_docs = scan_documents(script_dir, 'cartas')
+    
+    # Combina todos os documentos
+    documents = servidao_docs + cartas_docs
     
     if not documents:
-        print("Nenhum arquivo .md encontrado em servidao/")
+        print("Nenhum arquivo .md encontrado")
         return
     
     # Ordena por caminho

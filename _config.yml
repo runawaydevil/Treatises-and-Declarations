@@ -15,3 +15,5 @@ include:
   - home.md
   - documents.json
   - feeds
+  - robots.txt
+  - sitemap.xml

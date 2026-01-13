@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://runawaydevil.github.io/Treatises-and-Declarations/sitemap.xml
