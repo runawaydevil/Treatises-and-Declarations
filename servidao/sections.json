@@ -1,0 +1,11 @@
+{
+  "mainMenuName": "Das vaidades",
+  "sections": {
+    "manifestos": "Manifestos",
+    "tratados": "Tratados",
+    "ensaios": "Ensaios",
+    "confissoes": "Confissoes",
+    "zeitgeist": "Zeitgeist"
+  },
+  "order": ["manifestos", "tratados", "ensaios", "confissoes", "zeitgeist"]
+}

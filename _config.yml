@@ -12,3 +12,6 @@ highlighter: rouge
 include:
   - assets
   - servidao
+  - home.md
+  - documents.json
+  - feeds
