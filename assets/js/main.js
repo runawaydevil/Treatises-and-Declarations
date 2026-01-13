@@ -582,9 +582,18 @@ function renderNavigation() {
         const mainMenuName = getMainMenuName(folderName);
         const sectionOrder = getSectionOrder(folderName);
         
-        // Se não há estado salvo, adiciona o menu principal como colapsado
+        // Se não há estado salvo, adiciona o menu principal e todas as subseções como colapsadas
         if (!hasSavedState) {
             collapsedSections.add(mainMenuName);
+            // Adiciona todas as subseções como colapsadas
+            Object.keys(folderSections).forEach(sectionKey => {
+                const normalizedSection = sectionKey.toLowerCase();
+                const sectionDocs = folderSections[normalizedSection];
+                if (sectionDocs && sectionDocs.length > 0) {
+                    const sectionDisplayName = getSectionDisplayName(folderName, normalizedSection);
+                    collapsedSections.add(sectionDisplayName);
+                }
+            });
         }
         
         // Determina ordem das seções

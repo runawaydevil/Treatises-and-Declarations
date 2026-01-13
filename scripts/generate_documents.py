@@ -404,6 +404,13 @@ def main():
     print(f"\nEscaneando arquivos .md em {servidao_path}...")
     documents = scan_markdown_files(servidao_path, script_dir, section_order)
     
+    # Escaneia também a pasta cartas/
+    cartas_path = script_dir / 'cartas'
+    if cartas_path.exists():
+        print(f"Escaneando arquivos .md em {cartas_path}...")
+        cartas_docs = scan_markdown_files(cartas_path, script_dir, section_order)
+        documents.extend(cartas_docs)
+    
     # Adiciona home.md se existir na raiz
     home_file = script_dir / 'home.md'
     if home_file.exists():
