@@ -5,6 +5,8 @@
 
 ---
 
+---
+
 Textos filosóficos sobre a servidão voluntária às imagens, o culto aos falsos deuses digitais e a transformação da vida em espetáculo.
 
 
