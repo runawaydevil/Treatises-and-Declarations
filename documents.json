@@ -1,81 +1,9 @@
 [
   {
-    "title": "MANIFESTO DA VIDA REAL",
-    "path": "servidao/manifestos/manifesto.md",
-    "section": "Manifestos",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "PARTE I — TRATADO MAIOR SOBRE A SERVIDÃO VOLUNTÁRIA ÀS IMAGENS",
-    "path": "servidao/tratados/tratado_parte_i.md",
-    "section": "Tratados",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "PARTE II — SOBRE A IDOLATRIA, O RESSENTIMENTO E A PRISÃO DO OLHAR",
-    "path": "servidao/tratados/tratado_parte_ii.md",
-    "section": "Tratados",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "PARTE III — SOBRE A ECONOMIA DA EXTRAÇÃO",
-    "path": "servidao/tratados/tratado_parte_iii.md",
-    "section": "Tratados",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "TRATADO IV — SOBRE A CCRU E A ILUMINAÇÃO SOMBRIA",
-    "path": "servidao/tratados/tratado_parte_iv.md",
-    "section": "Tratados",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "PARTE V — CONTRA A HOAX DA PERFEIÇÃO",
-    "path": "servidao/tratados/tratado_parte_v.md",
-    "section": "Tratados",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "PARTE VI — CHRISTUS LUX",
-    "path": "servidao/tratados/tratado_parte_vi.md",
-    "section": "Tratados",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "ENSAIO I — A DESACELERAÇÃO DEMOGRÁFICA E O EVANGELHO DA VIDA PERFEITA",
-    "path": "servidao/ensaios/ensaio_i.md",
-    "section": "Ensaios",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "ENSAIO II — O EMBURRECIMENTO DO HUMANO",
-    "path": "servidao/ensaios/ensaio_ii.md",
-    "section": "Ensaios",
-    "date": "2026-01-09",
-    "status": null,
-    "tags": []
-  },
-  {
-    "title": "ENSAIO III — O PARADOXO DA TOLERÂNCIA NA ERA DO FEED",
-    "path": "servidao/ensaios/ensaio_iii.md",
-    "section": "Ensaios",
-    "date": "2026-01-10",
+    "title": "Tratados e Declarações",
+    "path": "home.md",
+    "section": "Início",
+    "date": "2026-01-13",
     "status": null,
     "tags": []
   },
@@ -83,7 +11,31 @@
     "title": "CONFISSÕES 01 — RUNAWAYDEVIL",
     "path": "servidao/confissoes/confissoes_i.md",
     "section": "Confissoes",
-    "date": "2026-01-09",
+    "date": "2026-01-13",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "ENSAIO I — A DESACELERAÇÃO DEMOGRÁFICA E O EVANGELHO DA VIDA PERFEITA",
+    "path": "servidao/ensaios/ensaio_i.md",
+    "section": "Ensaios",
+    "date": "2026-01-13",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "MANIFESTO DA VIDA REAL",
+    "path": "servidao/manifestos/manifesto.md",
+    "section": "Manifestos",
+    "date": "2026-01-13",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "PARTE I — TRATADO MAIOR SOBRE A SERVIDÃO VOLUNTÁRIA ÀS IMAGENS",
+    "path": "servidao/tratados/tratado_parte_i.md",
+    "section": "Tratados",
+    "date": "2026-01-13",
     "status": null,
     "tags": []
   },
@@ -91,7 +43,55 @@
     "title": "ZEIT — Biblioteca de Referências (Links)",
     "path": "servidao/zeitgeist/Zeitbooks.md",
     "section": "Zeitgeist",
-    "date": "2026-01-09",
+    "date": "2026-01-13",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "ENSAIO II — O EMBURRECIMENTO DO HUMANO",
+    "path": "servidao/ensaios/ensaio_ii.md",
+    "section": "Ensaios",
+    "date": "2026-01-13",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "PARTE II — SOBRE A IDOLATRIA, O RESSENTIMENTO E A PRISÃO DO OLHAR",
+    "path": "servidao/tratados/tratado_parte_ii.md",
+    "section": "Tratados",
+    "date": "2026-01-13",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "ENSAIO III — O PARADOXO DA TOLERÂNCIA NA ERA DO FEED",
+    "path": "servidao/ensaios/ensaio_iii.md",
+    "section": "Ensaios",
+    "date": "2026-01-13",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "PARTE III — SOBRE A ECONOMIA DA EXTRAÇÃO",
+    "path": "servidao/tratados/tratado_parte_iii.md",
+    "section": "Tratados",
+    "date": "2026-01-13",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "TRATADO IV — SOBRE A CCRU E A ILUMINAÇÃO SOMBRIA",
+    "path": "servidao/tratados/tratado_parte_iv.md",
+    "section": "Tratados",
+    "date": "2026-01-13",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "PARTE V — CONTRA A HOAX DA PERFEIÇÃO",
+    "path": "servidao/tratados/tratado_parte_v.md",
+    "section": "Tratados",
+    "date": "2026-01-13",
     "status": null,
     "tags": []
   },
@@ -99,7 +99,15 @@
     "title": "Eu apoio a liberdade com consciência",
     "path": "servidao/zeitgeist/RD1.md",
     "section": "Zeitgeist",
-    "date": "2026-01-09",
+    "date": "2026-01-13",
+    "status": null,
+    "tags": []
+  },
+  {
+    "title": "PARTE VI — CHRISTUS LUX",
+    "path": "servidao/tratados/tratado_parte_vi.md",
+    "section": "Tratados",
+    "date": "2026-01-13",
     "status": null,
     "tags": []
   },
@@ -107,7 +115,7 @@
     "title": "RD-1987",
     "path": "servidao/zeitgeist/RD.md",
     "section": "Zeitgeist",
-    "date": "2026-01-09",
+    "date": "2026-01-13",
     "status": null,
     "tags": []
   }

@@ -252,6 +252,10 @@ def get_sort_key(doc, file_path=None, section_order=None):
     title = doc['title']
     section_key = get_section_key(section)
     
+    # Se for home.md, sempre vai primeiro (ordem 0)
+    if doc.get('_is_home'):
+        return (0, 0, title)
+    
     # Ordem da seção conforme order.md (999 se não estiver definida)
     section_order_index = 999
     if section_order:
@@ -364,9 +368,10 @@ def scan_markdown_files(servidao_path, base_path, section_order=None):
     # Ordena: primeiro por ordem da seção (order.md), depois por número romano, depois por título
     documents.sort(key=lambda x: get_sort_key(x, x.get('_file_path'), section_order))
     
-    # Remove o campo auxiliar antes de retornar
+    # Remove os campos auxiliares antes de retornar
     for doc in documents:
         doc.pop('_file_path', None)
+        doc.pop('_is_home', None)
     
     return documents
 
@@ -399,9 +404,34 @@ def main():
     print(f"\nEscaneando arquivos .md em {servidao_path}...")
     documents = scan_markdown_files(servidao_path, script_dir, section_order)
     
+    # Adiciona home.md se existir na raiz
+    home_file = script_dir / 'home.md'
+    if home_file.exists():
+        print(f"Encontrado home.md na raiz, adicionando como página inicial...")
+        frontmatter = extract_yaml_frontmatter(home_file)
+        title = extract_title_from_markdown(home_file, frontmatter)
+        metadata = extract_metadata_from_file(home_file, frontmatter)
+        
+        home_doc = {
+            'title': title,
+            'path': 'home.md',
+            'section': 'Início',
+            'date': metadata['date'],
+            'status': metadata['status'],
+            'tags': metadata['tags'],
+            '_file_path': str(home_file),
+            '_is_home': True  # Flag especial para ordenação
+        }
+        documents.insert(0, home_doc)  # Insere no início
+    
     if not documents:
-        print("Nenhum arquivo .md encontrado em servidao/")
+        print("Nenhum arquivo .md encontrado")
         return
+    
+    # Remove campos auxiliares de todos os documentos antes de salvar
+    for doc in documents:
+        doc.pop('_file_path', None)
+        doc.pop('_is_home', None)
     
     print(f"\nEncontrados {len(documents)} documento(s):")
     for doc in documents:

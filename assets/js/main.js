@@ -170,9 +170,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Configurar filtros
     setupFilters();
     
-    // Renderizar navegação e carregar primeiro documento
+    // Renderizar navegação
     renderNavigation();
-    if (documents.length > 0) {
+    
+    // Carregar home.md automaticamente se existir, senão carrega o primeiro documento
+    const homeDoc = documents.find(doc => doc.path === 'home.md' || doc.section === 'Início');
+    if (homeDoc) {
+        loadDocument(homeDoc.path);
+    } else if (documents.length > 0) {
         // Expandir seção do primeiro documento
         const firstDoc = documents[0];
         if (collapsedSections.has(firstDoc.section)) {
@@ -273,7 +278,12 @@ function toggleSection(sectionName) {
 
 // Atualizar UI da seção
 function updateSectionUI(sectionName) {
-    const sectionElement = document.querySelector(`[data-section="${sectionName}"]`);
+    // Tenta encontrar por data-section (seções principais) ou data-subsection (subseções)
+    let sectionElement = document.querySelector(`[data-section="${sectionName}"]`);
+    if (!sectionElement) {
+        sectionElement = document.querySelector(`[data-subsection="${sectionName}"]`);
+    }
+    
     const sectionContent = document.querySelector(`[data-section-content="${sectionName}"]`);
     const toggleIcon = sectionElement?.querySelector('.section-toggle-icon');
     
@@ -408,89 +418,161 @@ function renderNavigation() {
     // Aplicar filtros
     const filteredDocuments = applyFilters(documents);
     
-    const sections = {};
-    const sectionOrder = []; // Preserva a ordem das seções conforme aparecem no JSON
+    // Separar home.md (seção "Início") dos outros documentos
+    const homeDocs = filteredDocuments.filter(doc => doc.section === 'Início');
+    const otherDocs = filteredDocuments.filter(doc => doc.section !== 'Início');
     
-    filteredDocuments.forEach(doc => {
+    // Adicionar link para página inicial (home.md) se existir
+    if (homeDocs.length > 0) {
+        const homeDoc = homeDocs[0];
+        const homeItem = document.createElement('li');
+        homeItem.className = 'nav-item';
+        
+        const homeLink = document.createElement('a');
+        homeLink.href = '#';
+        homeLink.className = 'nav-link';
+        homeLink.textContent = 'Início';
+        homeLink.dataset.path = homeDoc.path;
+        
+        homeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            loadDocument(homeDoc.path);
+            updateActiveLink(homeLink);
+            if (isMobile()) {
+                setTimeout(() => {
+                    closeSidebar();
+                }, 100);
+            }
+        });
+        
+        homeLink.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        });
+        
+        homeItem.appendChild(homeLink);
+        navList.appendChild(homeItem);
+    }
+    
+    // Agrupar todos os outros documentos por seção
+    const sections = {};
+    const sectionOrder = [];
+    
+    otherDocs.forEach(doc => {
         if (!sections[doc.section]) {
             sections[doc.section] = [];
-            sectionOrder.push(doc.section); // Guarda ordem da primeira aparição
+            sectionOrder.push(doc.section);
         }
         sections[doc.section].push(doc);
     });
     
-    // Usa sectionOrder para manter Manifestos (e outras seções) na ordem correta
-    sectionOrder.forEach(sectionName => {
-        // Container da seção
-        const sectionContainer = document.createElement('li');
-        sectionContainer.className = 'nav-section-container';
+    // Se houver documentos além do home, criar seção "Das vaidades"
+    if (sectionOrder.length > 0) {
+        const dasVaidadesContainer = document.createElement('li');
+        dasVaidadesContainer.className = 'nav-section-container';
         
-        // Título da seção (clicável)
-        const sectionTitle = document.createElement('div');
-        sectionTitle.className = 'nav-section';
-        sectionTitle.dataset.section = sectionName;
-        sectionTitle.style.cursor = 'pointer';
+        // Título "Das vaidades" (clicável)
+        const dasVaidadesTitle = document.createElement('div');
+        dasVaidadesTitle.className = 'nav-section';
+        dasVaidadesTitle.dataset.section = 'Das vaidades';
+        dasVaidadesTitle.style.cursor = 'pointer';
         
         // Ícone de toggle
         const toggleIcon = document.createElement('span');
         toggleIcon.className = 'section-toggle-icon';
-        toggleIcon.textContent = collapsedSections.has(sectionName) ? '▶' : '▼';
+        toggleIcon.textContent = collapsedSections.has('Das vaidades') ? '▶' : '▼';
         
         // Texto da seção
         const sectionText = document.createElement('span');
-        sectionText.textContent = sectionName;
+        sectionText.textContent = 'Das vaidades';
         
-        sectionTitle.appendChild(toggleIcon);
-        sectionTitle.appendChild(sectionText);
+        dasVaidadesTitle.appendChild(toggleIcon);
+        dasVaidadesTitle.appendChild(sectionText);
         
         // Event listener para toggle
-        sectionTitle.addEventListener('click', () => {
-            toggleSection(sectionName);
+        dasVaidadesTitle.addEventListener('click', () => {
+            toggleSection('Das vaidades');
         });
         
-        // Lista de documentos da seção
-        const sectionList = document.createElement('ul');
-        sectionList.className = 'nav-section-list';
-        sectionList.dataset.sectionContent = sectionName;
-        sectionList.style.display = collapsedSections.has(sectionName) ? 'none' : 'block';
+        // Container para subseções dentro de "Das vaidades"
+        const dasVaidadesContent = document.createElement('ul');
+        dasVaidadesContent.className = 'nav-section-list';
+        dasVaidadesContent.dataset.sectionContent = 'Das vaidades';
+        dasVaidadesContent.style.display = collapsedSections.has('Das vaidades') ? 'none' : 'block';
         
-        sections[sectionName].forEach(doc => {
-            const listItem = document.createElement('li');
-            listItem.className = 'nav-item';
+        // Criar subseções dentro de "Das vaidades"
+        sectionOrder.forEach(sectionName => {
+            const subSectionContainer = document.createElement('li');
+            subSectionContainer.className = 'nav-subsection-container';
             
-            const link = document.createElement('a');
-            link.href = '#';
-            link.className = 'nav-link';
-            link.textContent = doc.title;
-            link.dataset.path = doc.path;
+            // Título da subseção (clicável)
+            const subSectionTitle = document.createElement('div');
+            subSectionTitle.className = 'nav-subsection';
+            subSectionTitle.dataset.subsection = sectionName;
+            subSectionTitle.style.cursor = 'pointer';
             
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                loadDocument(doc.path);
-                updateActiveLink(link);
-                // Fechar menu no mobile após seleção
-                if (isMobile()) {
-                    // Pequeno delay para garantir que o clique foi processado
-                    setTimeout(() => {
-                        closeSidebar();
-                    }, 100);
-                }
+            // Ícone de toggle da subseção
+            const subToggleIcon = document.createElement('span');
+            subToggleIcon.className = 'section-toggle-icon';
+            subToggleIcon.textContent = collapsedSections.has(sectionName) ? '▶' : '▼';
+            
+            // Texto da subseção
+            const subSectionText = document.createElement('span');
+            subSectionText.textContent = sectionName;
+            
+            subSectionTitle.appendChild(subToggleIcon);
+            subSectionTitle.appendChild(subSectionText);
+            
+            // Event listener para toggle da subseção
+            subSectionTitle.addEventListener('click', () => {
+                toggleSection(sectionName);
             });
             
-            // Adicionar também touchstart para melhor compatibilidade mobile
-            link.addEventListener('touchstart', (e) => {
-                e.stopPropagation();
+            // Lista de documentos da subseção
+            const subSectionList = document.createElement('ul');
+            subSectionList.className = 'nav-subsection-list';
+            subSectionList.dataset.sectionContent = sectionName;
+            subSectionList.style.display = collapsedSections.has(sectionName) ? 'none' : 'block';
+            
+            sections[sectionName].forEach(doc => {
+                const listItem = document.createElement('li');
+                listItem.className = 'nav-item';
+                
+                const link = document.createElement('a');
+                link.href = '#';
+                link.className = 'nav-link';
+                link.textContent = doc.title;
+                link.dataset.path = doc.path;
+                
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    loadDocument(doc.path);
+                    updateActiveLink(link);
+                    if (isMobile()) {
+                        setTimeout(() => {
+                            closeSidebar();
+                        }, 100);
+                    }
+                });
+                
+                link.addEventListener('touchstart', (e) => {
+                    e.stopPropagation();
+                });
+                
+                listItem.appendChild(link);
+                subSectionList.appendChild(listItem);
             });
             
-            listItem.appendChild(link);
-            sectionList.appendChild(listItem);
+            subSectionContainer.appendChild(subSectionTitle);
+            subSectionContainer.appendChild(subSectionList);
+            dasVaidadesContent.appendChild(subSectionContainer);
         });
         
-        sectionContainer.appendChild(sectionTitle);
-        sectionContainer.appendChild(sectionList);
-        navList.appendChild(sectionContainer);
-    });
+        dasVaidadesContainer.appendChild(dasVaidadesTitle);
+        dasVaidadesContainer.appendChild(dasVaidadesContent);
+        navList.appendChild(dasVaidadesContainer);
+    }
 }
 
 // Atualizar link ativo
