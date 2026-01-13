@@ -344,6 +344,9 @@ function loadSectionState() {
         if (saved) {
             const sections = JSON.parse(saved);
             sections.forEach(section => collapsedSections.add(section));
+        } else {
+            // Se não há estado salvo, inicia tudo colapsado por padrão
+            // Isso será preenchido durante a renderização
         }
     } catch (e) {
         console.error('Erro ao carregar estado das seções:', e);
@@ -570,11 +573,19 @@ function renderNavigation() {
         }
     });
     
+    // Verificar se há estado salvo
+    const hasSavedState = localStorage.getItem('collapsedSections') !== null;
+    
     // Criar menu para cada pasta principal
     Object.keys(foldersMap).forEach(folderName => {
         const folderSections = foldersMap[folderName];
         const mainMenuName = getMainMenuName(folderName);
         const sectionOrder = getSectionOrder(folderName);
+        
+        // Se não há estado salvo, adiciona o menu principal como colapsado
+        if (!hasSavedState) {
+            collapsedSections.add(mainMenuName);
+        }
         
         // Determina ordem das seções
         let orderedSections = [];
@@ -712,7 +723,12 @@ function renderNavigation() {
         mainMenuContainer.appendChild(mainMenuTitle);
         mainMenuContainer.appendChild(mainMenuContent);
         navList.appendChild(mainMenuContainer);
-    })
+    });
+    
+    // Se não havia estado salvo, salva o estado inicial (tudo colapsado)
+    if (!hasSavedState) {
+        saveSectionState();
+    }
 }
 
 // Atualizar link ativo
