@@ -288,11 +288,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (homeDoc) {
             loadDocument(homeDoc.path);
         } else if (documents.length > 0) {
-            // Expandir seção do primeiro documento
-            const firstDoc = documents[0];
-            if (collapsedSections.has(firstDoc.section)) {
-                toggleSection(firstDoc.section);
-            }
             loadDocument(documents[0].path);
         }
     }
@@ -561,33 +556,8 @@ function renderNavigation() {
     
     navList.innerHTML = '';
     
-    // Verificar se há estado salvo válido ANTES de carregar
-    const savedStateRaw = localStorage.getItem('collapsedSections');
-    let hasSavedState = false;
-    
-    // Limpar estado atual
+    // Limpar estado atual - sempre iniciar com tudo fechado
     collapsedSections.clear();
-    
-    // Verifica se há estado salvo válido (não null, não vazio, não array vazio)
-    if (savedStateRaw && savedStateRaw.trim() !== '' && savedStateRaw !== '[]') {
-        try {
-            const sections = JSON.parse(savedStateRaw);
-            // Só considera estado válido se for um array com pelo menos um elemento
-            if (Array.isArray(sections) && sections.length > 0) {
-                hasSavedState = true;
-                sections.forEach(section => {
-                    if (section && typeof section === 'string') {
-                        collapsedSections.add(section);
-                    }
-                });
-            }
-        } catch (e) {
-            console.error('Erro ao carregar estado das seções:', e);
-            // Se houver erro, limpa o localStorage e inicia tudo colapsado
-            localStorage.removeItem('collapsedSections');
-            hasSavedState = false;
-        }
-    }
     
     // Aplicar filtros
     const filteredDocuments = applyFilters(documents);
@@ -650,32 +620,28 @@ function renderNavigation() {
         }
     });
     
-    // Se não há estado salvo, adiciona TODAS as seções como colapsadas ANTES de renderizar
-    if (!hasSavedState) {
-        // Itera sobre todas as pastas principais
-        Object.keys(foldersMap).forEach(folderName => {
-            const folderSections = foldersMap[folderName];
-            const mainMenuName = getMainMenuName(folderName);
-            
-            // Adiciona o menu principal como colapsado
-            collapsedSections.add(mainMenuName);
-            
-            // Adiciona todas as subseções como colapsadas
-            // Itera sobre todas as seções dentro da pasta
-            Object.keys(folderSections).forEach(sectionKey => {
-                const normalizedSection = sectionKey.toLowerCase();
-                const sectionDocs = folderSections[normalizedSection];
-                
-                // Verifica se há documentos na seção
-                if (sectionDocs && sectionDocs.length > 0) {
-                    const sectionDisplayName = getSectionDisplayName(folderName, normalizedSection);
-                    // Adiciona a subseção como colapsada
-                    collapsedSections.add(sectionDisplayName);
-                }
-            });
-        });
+    // SEMPRE adiciona TODAS as seções como colapsadas ANTES de renderizar
+    // Isso garante que todos os menus iniciem fechados, independente do estado salvo
+    Object.keys(foldersMap).forEach(folderName => {
+        const folderSections = foldersMap[folderName];
+        const mainMenuName = getMainMenuName(folderName);
         
-    }
+        // Adiciona o menu principal como colapsado
+        collapsedSections.add(mainMenuName);
+        
+        // Adiciona todas as subseções como colapsadas
+        Object.keys(folderSections).forEach(sectionKey => {
+            const normalizedSection = sectionKey.toLowerCase();
+            const sectionDocs = folderSections[normalizedSection];
+            
+            // Verifica se há documentos na seção
+            if (sectionDocs && sectionDocs.length > 0) {
+                const sectionDisplayName = getSectionDisplayName(folderName, normalizedSection);
+                // Adiciona a subseção como colapsada
+                collapsedSections.add(sectionDisplayName);
+            }
+        });
+    });
     
     // Criar menu para cada pasta principal
     Object.keys(foldersMap).forEach(folderName => {
@@ -837,11 +803,8 @@ function renderNavigation() {
         navList.appendChild(mainMenuContainer);
     });
     
-    // Se não havia estado salvo, salva o estado inicial (tudo colapsado)
-    if (!hasSavedState) {
-        // Salva o estado inicial com todas as seções colapsadas
-        saveSectionState();
-    }
+    // Salva o estado inicial (tudo colapsado) para manter consistência
+    saveSectionState();
 }
 
 // Atualizar link ativo
